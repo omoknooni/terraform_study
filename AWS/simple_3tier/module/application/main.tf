@@ -15,7 +15,7 @@ resource "aws_instance" "simple-3tier-was" {
     ami = var.instance_ami
     instance_type = "t2.micro"
     subnet_id = element(var.application_subnet_id, 2+count.index)
-    vpc_security_group_ids = [  ]
+    vpc_security_group_ids = [ aws_security_group.simple-3tier-application-sg.id ]
 }
 
 
@@ -62,6 +62,13 @@ resource "aws_security_group" "simple-3tier-application-sg" {
         protocol = "tcp"
         description = "HTTPS from ALB"
         security_groups = [ aws_security_group.simple-3tier-alb-sg.id ]
+    }
+    ingress {
+        from_port = 8080
+        to_port = 8080
+        protocol = "tcp"
+        description = "WAS access"
+        cidr_blocks = [ "0.0.0.0/0" ]
     }
 
     egress {

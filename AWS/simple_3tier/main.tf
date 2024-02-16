@@ -16,6 +16,8 @@ module "db" {
     username = var.username
     rds_password = var.rds_password
 
+    application_sgid = module.application.application_sg_id
+
     vpc_id = module.vpc.vpc_id
     db_subnet_id = module.vpc.db_subnet_id
     availability_zone_list = var.availability_zone_list
