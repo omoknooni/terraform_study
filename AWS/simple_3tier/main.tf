@@ -1,6 +1,9 @@
 module "application" {
     source = "./module/application"
+    vpc_id = module.vpc.vpc_id
+    application_subnet_id = var.availability_zone_list
 
+    instance_ami = var.instance_ami
 }
 
 module "vpc" {
@@ -15,4 +18,5 @@ module "db" {
 
     vpc_id = module.vpc.vpc_id
     db_subnet_id = module.vpc.db_subnet_id
+    availability_zone_list = var.availability_zone_list
 }
