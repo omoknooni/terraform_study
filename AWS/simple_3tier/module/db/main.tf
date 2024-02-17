@@ -1,6 +1,6 @@
 resource "aws_db_instance" "simple-3tier-master" {
     allocated_storage = 8
-    db_name = "${var.db_name}-master"
+    db_name = "${var.db_name}Master"
     username = var.username
     password = var.rds_password
 
@@ -9,23 +9,25 @@ resource "aws_db_instance" "simple-3tier-master" {
     engine_version = "8.0.35"
 
     availability_zone = var.availability_zone_list[0]
-    db_subnet_group_name = aws_db_subnet_group.simple-3tier-db-subnet-group.*.name[0]
-    vpc_security_group_ids = [aws_security_group.simple-3tier-rds-sg]
+    db_subnet_group_name = aws_db_subnet_group.simple-3tier-db-subnet-group.name
+    vpc_security_group_ids = [aws_security_group.simple-3tier-rds-sg.id]
 }
 
 resource "aws_db_instance" "simple-3tier-slave" {
     allocated_storage = 8
-    db_name = "${var.db_name}-slave"
+    db_name = "${var.db_name}Slave"
     username = var.username
     password = var.rds_password
+
+    replicate_source_db = aws_db_instance.simple-3tier-master.id
 
     instance_class = "db.t3.micro"
     engine = "mysql"
     engine_version = "8.0.35"
 
     availability_zone = var.availability_zone_list[1]
-    db_subnet_group_name = aws_db_subnet_group.simple-3tier-db-subnet-group.*.name[1]
-    vpc_security_group_ids = [ aws_security_group.simple-3tier-rds-sg ]
+    db_subnet_group_name = aws_db_subnet_group.simple-3tier-db-subnet-group.name
+    vpc_security_group_ids = [ aws_security_group.simple-3tier-rds-sg.id ]
 }
 
 
@@ -49,7 +51,6 @@ resource "aws_security_group" "simple-3tier-rds-sg" {
 }
 
 resource "aws_db_subnet_group" "simple-3tier-db-subnet-group" {
-    count = 2
     name = "simple-3tier-db-subnet-group"
-    subnet_ids = [var.db_subnet_id[count.index]]
+    subnet_ids = var.db_subnet_id
 }

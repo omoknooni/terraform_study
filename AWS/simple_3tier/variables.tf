@@ -13,7 +13,7 @@ variable "instance_ami" {
 
 # DB
 variable "db_name" {
-    default = "simple-3tier-db"
+    default = "Simple3tierDB"
 }
 variable "username" {
     default = "simplemaster"
