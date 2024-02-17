@@ -8,21 +8,21 @@ resource "aws_vpc" "simple-3tier-vpc" {
 resource "aws_subnet" "simple-3tier-public-subnet" {
     count = 2
     vpc_id = aws_vpc.simple-3tier-vpc.id
-    cidr_block = replace(var.subnet_cidr, "x", 1+count.idx) # 192.168.1.0/24, 192.168.2.0/24
+    cidr_block = replace(var.subnet_cidr, "x", 1 + count.index) # 192.168.1.0/24, 192.168.2.0/24
     availability_zone = element(var.availability_zone_list, count.index)
 }
 
 resource "aws_subnet" "simple-3tier-application-subnet" {
     count = 4
     vpc_id = aws_vpc.simple-3tier-vpc.id
-    cidr_block = replace(var.subnet_cidr, "x", 3+count.index)
+    cidr_block = replace(var.subnet_cidr, "x", 3 + count.index) # 192.168.3.0/24, 192.168.4.0/24, 192.168.5.0/24, 192.168.6.0/24
     availability_zone = element(var.availability_zone_list, count.index)
 }
 
 resource "aws_subnet" "simple-3tier-db-subnet" {
     count = 2
     vpc_id = aws_vpc.simple-3tier-vpc.id
-    cidr_block = replace(var.subnet_cidr, "x", 7+count.index)
+    cidr_block = replace(var.subnet_cidr, "x", 7 + count.index) # 192.168.7.0/24, 192.168.8.0/24
     availability_zone = element(var.availability_zone_list, count.index)
 }
 

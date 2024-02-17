@@ -1,6 +1,6 @@
 resource "aws_db_instance" "simple-3tier-master" {
     allocated_storage = 8
-    db_name = var.db_name
+    db_name = "${var.db_name}-master"
     username = var.username
     password = var.rds_password
 
@@ -14,7 +14,7 @@ resource "aws_db_instance" "simple-3tier-master" {
 
 resource "aws_db_instance" "simple-3tier-slave" {
     allocated_storage = 8
-    db_name = var.db_name
+    db_name = "${var.db_name}-slave"
     username = var.username
     password = var.rds_password
 
@@ -34,13 +34,20 @@ resource "aws_security_group" "simple-3tier-rds-sg" {
     ingress {
         from_port = 3306
         to_port = 3306
+        protocol = "tcp"
         description = "DB Access from application(was)"
         security_groups = [ var.application_sgid ]
+    }
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = [ "0.0.0.0/0" ]
     }
 }
 
 resource "aws_db_subnet_group" "simple-3tier-db-subnet-group" {
     count = 2
     name = "simple-3tier-db-subnet-group"
-    subnet_ids = var.db_subnet_id[count.index]
+    subnet_ids = [var.db_subnet_id[count.index]]
 }
