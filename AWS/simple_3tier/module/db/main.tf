@@ -10,6 +10,7 @@ resource "aws_db_instance" "simple-3tier-master" {
 
     availability_zone = var.availability_zone_list[0]
     db_subnet_group_name = aws_db_subnet_group.simple-3tier-db-subnet-group.*.name[0]
+    vpc_security_group_ids = [aws_security_group.simple-3tier-rds-sg]
 }
 
 resource "aws_db_instance" "simple-3tier-slave" {
@@ -24,6 +25,7 @@ resource "aws_db_instance" "simple-3tier-slave" {
 
     availability_zone = var.availability_zone_list[1]
     db_subnet_group_name = aws_db_subnet_group.simple-3tier-db-subnet-group.*.name[1]
+    vpc_security_group_ids = [ aws_security_group.simple-3tier-rds-sg ]
 }
 
 
