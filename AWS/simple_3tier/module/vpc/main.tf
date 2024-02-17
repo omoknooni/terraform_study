@@ -75,3 +75,27 @@ resource "aws_nat_gateway" "simple-3tier-natgw" {
     allocation_id = aws_eip.simple-3tier-natgw-eip.id
     subnet_id = aws_subnet.simple-3tier-public-subnet.*.id[1]
 }
+
+
+# EC2 Instance Connect Endpoint
+resource "aws_ec2_instance_connect_endpoint" "simple-3tier-eice" {
+    subnet_id = aws_subnet.simple-3tier-application-subnet.*.id[1]
+    security_group_ids = [ aws_security_group.simple-3tier-eice-sg.id ]
+}
+
+resource "aws_security_group" "simple-3tier-eice-sg" {
+    name = "simple-3tier-eice-sg"
+    description = "simple-3tier-eice-sg"
+    vpc_id = aws_vpc.simple-3tier-vpc.id
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+}
+
+# Get Actuator's IP address
+data "http" "myip" {
+    url = "http://ipv4.icanhazip.com"
+}
