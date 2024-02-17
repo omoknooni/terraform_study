@@ -38,6 +38,11 @@ resource "aws_route_table" "simple-3tier-pub-rt" {
 
 resource "aws_route_table" "simple-3tier-priv-rt" {
     vpc_id = aws_vpc.simple-3tier-vpc.id
+
+    route {
+        cidr_block = "0.0.0.0/0"
+        gateway_id = aws_nat_gateway.simple-3tier-natgw.id
+    }
 }
 
 # Route table Associate
