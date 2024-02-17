@@ -1,6 +1,7 @@
 module "application" {
     source = "./module/application"
     vpc_id = module.vpc.vpc_id
+    public_subnet_id = module.vpc.public_subnet_id
     application_subnet_id = module.vpc.application_subnet_id
 
     instance_ami = var.instance_ami

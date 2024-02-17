@@ -5,6 +5,8 @@ resource "aws_instance" "simple-3tier-web" {
     instance_type = "t2.micro"
     subnet_id = element(var.application_subnet_id, count.index)
 
+    user_data = filebase64("${path.module}/script/install_nginx.sh")
+
     key_name = aws_key_pair.simple-3tier-key.key_name
     vpc_security_group_ids = [ aws_security_group.simple-3tier-application-sg.id ]
 }
@@ -15,6 +17,10 @@ resource "aws_instance" "simple-3tier-was" {
     ami = var.instance_ami
     instance_type = "t2.micro"
     subnet_id = element(var.application_subnet_id, 2+count.index)
+    
+    user_data = filebase64("${path.module}/script/install_tomcat.sh")
+
+    key_name = aws_key_pair.simple-3tier-key.key_name
     vpc_security_group_ids = [ aws_security_group.simple-3tier-application-sg.id ]
 }
 
@@ -96,13 +102,13 @@ resource "local_file" "simple-3tier-key" {
 }
 
 
-### ALB
+### External ALB
 resource "aws_alb" "simple-3tier-ex-alb" {
     name = "simple-3tier-ex-alb"
     internal = false
     load_balancer_type = "application"
     security_groups = [ aws_security_group.simple-3tier-alb-sg.id ]
-    subnets = var.application_subnet_id
+    subnets = var.public_subnet_id
 }
 
 resource "aws_alb_target_group" "simple-3tier-ex-tg" {
@@ -129,3 +135,37 @@ resource "aws_alb_listener" "simple-3tier-ex-listener" {
       target_group_arn = aws_alb_target_group.simple-3tier-ex-tg.arn
     }
 }
+
+### Internal ALB
+resource "aws_alb" "simple-3tier-inner-alb" {
+    name = "simple-3tier-inner-alb"
+    internal = true
+    load_balancer_type = "application"
+    security_groups = [ aws_security_group.simple-3tier-alb-sg.id ]
+}
+
+resource "aws_alb_target_group" "simple-3tier-inner-tg" { 
+    name = "simple-3tier-inner-tg"
+    port = 8080
+    protocol = "HTTP"
+    vpc_id = var.vpc_id
+}
+
+resource "aws_alb_target_group_attachment" "simple-3tier-inner-attach" {
+    count = 2
+    target_group_arn = aws_alb_target_group.simple-3tier-inner-tg.arn
+    target_id = element(aws_instance.simple-3tier-was.*.id, count.index)
+    port = 8080
+}
+
+resource "aws_alb_listener" "simple-3tier-inner-listener" {
+    load_balancer_arn = aws_alb.simple-3tier-inner-alb.arn
+    port = "8080"
+    protocol = "HTTP"
+
+    default_action {
+      type = "forward"
+      target_group_arn = aws_alb_target_group.simple-3tier-inner-tg.arn
+    }
+}
+
