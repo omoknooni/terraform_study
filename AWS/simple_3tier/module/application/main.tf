@@ -9,6 +9,10 @@ resource "aws_instance" "simple-3tier-web" {
 
     key_name = aws_key_pair.simple-3tier-key.key_name
     vpc_security_group_ids = [ aws_security_group.simple-3tier-application-sg.id ]
+
+    tags = {
+        Name = "simple-3tier-web-${count.index+1}"
+    }
 }
 
 
@@ -22,6 +26,10 @@ resource "aws_instance" "simple-3tier-was" {
 
     key_name = aws_key_pair.simple-3tier-key.key_name
     vpc_security_group_ids = [ aws_security_group.simple-3tier-application-sg.id ]
+
+    tags = {
+        Name = "simple-3tier-was-${count.index+1}"
+    }
 }
 
 
@@ -55,6 +63,12 @@ resource "aws_security_group" "simple-3tier-application-sg" {
     name = "simple-3tier-application-sg"
     vpc_id = var.vpc_id
 
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        security_groups = [ var.eice_sg_id ]
+    }
     ingress {
         from_port = 80
         to_port = 80
@@ -142,6 +156,9 @@ resource "aws_alb" "simple-3tier-inner-alb" {
     internal = true
     load_balancer_type = "application"
     security_groups = [ aws_security_group.simple-3tier-alb-sg.id ]
+    
+    # subnet is last 2 item of var.application_subnet_id
+    subnets = slice(var.application_subnet_id, 2,4)
 }
 
 resource "aws_alb_target_group" "simple-3tier-inner-tg" { 

@@ -7,3 +7,4 @@ variable "application_subnet_id" {
 }
 
 variable "instance_ami" {}
+variable "eice_sg_id" {}

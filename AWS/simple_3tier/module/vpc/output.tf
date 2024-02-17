@@ -13,3 +13,7 @@ output "application_subnet_id" {
 output "db_subnet_id" {
     value = aws_subnet.simple-3tier-db-subnet.*.id
 }
+
+output "eice_sg_id" {
+    value = aws_security_group.simple-3tier-eice-sg.id
+}
