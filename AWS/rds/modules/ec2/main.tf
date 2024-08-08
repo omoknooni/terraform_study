@@ -6,6 +6,12 @@ resource "aws_instance" "rds-test-instance" {
   subnet_id     = var.subnet_id
   vpc_security_group_ids = [aws_security_group.sg.id]
   associate_public_ip_address = true
+
+  user_data = <<-EOF
+    #!/bin/bash
+    sudo apt update
+    apt install mysql-client -y
+  EOF
   tags = {
     Name = "RDS-test-instance"
   }
