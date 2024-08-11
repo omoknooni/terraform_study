@@ -292,7 +292,7 @@ resource "aws_ec2_transit_gateway_route" "seoul-to-osaka" {
 
 resource "aws_ec2_transit_gateway_route" "seoul-to-osaka-2" {
   destination_cidr_block = "192.169.0.0/16"
-  transit_gateway_attachment_id = aws_ec2_transit_gateway_vpc_attachment.seoul-tgw-attachment.id
+  transit_gateway_attachment_id = aws_ec2_transit_gateway_peering_attachment.tgw-peering.id
   transit_gateway_route_table_id = aws_ec2_transit_gateway.seoul-tgw.association_default_route_table_id
 }
 
