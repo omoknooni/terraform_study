@@ -9,7 +9,13 @@ variable "instance_ami" {
     default = "ami-0f3a440bbcff3d043"
 }
 
-
+# VPC
+variable "vpc_cidr" {
+    default = "192.168.0.0/16"
+}
+variable "subnet_cidr" {
+    default = "192.168.x.0/24"
+}
 
 # DB
 variable "db_name" {
