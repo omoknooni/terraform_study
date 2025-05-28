@@ -1,7 +1,9 @@
+**/.terraform/*
 *.tfstate
-*.tfstate.backup
+*.tfstate.*
 *.tfstate.lock.info
+*.tfvars
 .terraform.lock.hcl
-.terraform/
 *.pub
 *.pem
+*.zip
